@@ -1,0 +1,37 @@
+extends ../layout
+
+block container
+    div.page-header
+        h2 Log in
+
+    - if (errors) {
+        - each error in errors
+            .alert.alert-danger= error
+    - }
+
+    form.form-horizontal(name='loginForm', method='POST')
+        .form-group(class=validation.username ? 'has-error' : '')
+            label.col-sm-2.control-label(for='login-field') Email
+            .col-sm-10
+                input.form-control#login-field(name='username', placeholder='or username', type='text', value=account.username)
+                - if (validation.username)
+                    span.help-block= validation.username.message
+    
+        .form-group(class=validation.password ? 'has-error' : '')
+            label.col-sm-2.control-label(for='password-field') Password
+            .col-sm-10
+                input.form-control#username-field(name='password', placeholder='Password', type='password', value=account.password)
+                - if (validation.password)
+                    span.help-block= validation.password.message
+                .checkbox
+                    label(for='remember-field') Remember me
+                    input#remember-field(type='checkbox', name='remember', checked=false, value='true')
+
+        .form-group
+            .col-sm-2
+            .col-sm-10
+                button(type='submit').btn.btn-primary Log in
+
+block side-panel
+
+block scripts

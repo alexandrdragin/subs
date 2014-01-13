@@ -1,0 +1,81 @@
+body {
+    padding-top: 70px;
+}
+
+.view-loading-mask {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: yellow;
+    opacity: .5;    
+}
+
+.view-loading-mask span {
+    text-align: center;
+    top: 20%;
+    position: absolute;
+    width: 100%;
+    font-size: 30px;
+}
+
+.translate-table {
+    font-size: 12px;
+}
+
+.translate-table .time {
+    max-width: 40%;
+    font-size: 9px;
+    color: #888;
+    width: 10%;
+}
+
+.translate-table .original {
+    width: 40%;
+    border-right: 1px solid;
+}
+
+
+.translate-table .translation {
+    width: 40%;
+}
+
+.translate-table .tools {
+    width: 10%;
+}
+
+
+.translation-edit-item {
+    font-size: 12px;
+}
+
+.translation-edit-bottom-panel {
+    color: #888;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.vote-box a:hover {
+    text-decoration: none;
+    color: white;
+}
+
+.rating {
+    cursor: pointer;
+    background: lightgrey;
+    padding: 5px;
+}
+
+.rating-up {
+    color: black;
+    background: lightgreen;
+    padding: 5px;
+}
+
+.rating-down {
+    color: black;
+    background: lightpink;
+    padding: 5px;
+}

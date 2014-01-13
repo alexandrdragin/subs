@@ -1,0 +1,53 @@
+extends ../layout
+
+block container
+    div.page-header
+        h2 User registration
+
+    - if (errors) {
+        - each error in errors
+            .alert.alert-danger= error
+    - }
+
+    form.form-horizontal(name='regForm', method='POST', novalidate)
+        .form-group(class=validation.email ? 'has-error' : '')
+            label.col-sm-2.control-label(for='login-field') Email
+            .col-sm-10
+                input.form-control#login-field(name='email', placeholder='Email', type='email', value=account.email, required)
+                - if (validation.email)
+                    div
+                        span.help-block= validation.email.message
+
+        .form-group(class=validation.username ? 'has-error' : '')
+            label.col-sm-2.control-label(for='username-field') Username
+            .col-sm-10
+                input.form-control#username-field(name='username', placeholder='Username', type='text', value=account.username, required)
+                - if (validation.username)
+                    div
+                        span.help-block= validation.username.message
+
+        .form-group(class=validation.password || validation.passwordConfirmation ? 'has-error' : '')
+            label.col-sm-2.control-label(for='password-field') Password
+            .col-sm-10
+                input.form-control#password-field(name='password', placeholder='Password', type='password', value=account.password, require)
+                - if (validation.password)
+                    div
+                        span.help-block= validation.password.message
+
+        .form-group(class=validation.password || validation.passwordConfirmation ? 'has-error' : '')
+            label.col-sm-2.control-label(for='password-field')
+            .col-sm-10
+                input.form-control#password-field(name='passwordConfirmation', placeholder='Repeat password', type='password', value=account.passwordConfirmation, required)
+                - if (validation.passwordConfirmation)
+                    div
+                        span.help-block= validation.passwordConfirmation.message
+
+
+        .form-group
+            .col-sm-2
+            .col-sm-10
+                button(type='submit').btn.btn-primary Register
+
+        - if (typeof locals.referer !== 'undefined')
+            input(type='hidden', name='referer', value=locals.referer)
+

@@ -1,0 +1,17 @@
+{
+  "name": "subs-project",
+  "version": "0.0.1",
+  "ignore": [
+    ".jshintrc"
+  ],
+  "dependencies": {
+    "bootstrap": "*",
+    "angular": "*",
+    "angular-ui-bootstrap": "*",
+    "angular-cookies": "*",
+    "angular-route": "*",
+    "angular-socket-io": "*",
+    "angular-growl": "*"
+  },
+  "devDependencies": {}
+}

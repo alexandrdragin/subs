@@ -1,0 +1,27 @@
+{
+    "name": "subs",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "express": "*",
+        "jade": "*",
+        "less-middleware": "*",
+        "tracer": "*",
+        "async": "*",
+        "lodash": "*",
+        "passport": "*",
+        "passport-local": "*",
+        "socket.io": "*",
+        "passport.socketio": "*",
+        "mongoose": "*",
+        "connect-redis": "*",
+        "connect-mongo": "*",
+        "nodemailer": "*",
+        "iconv": "*",
+        "subtitles-parser": "*",
+        "crypto": "*"
+    }
+}
