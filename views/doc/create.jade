@@ -1,0 +1,75 @@
+extends ../layout
+
+block container
+    div.page-header
+        h2 Create translation
+
+    - if (errors) {
+        - each error in errors
+            .alert.alert-danger= error
+    - }
+
+    form.form-horizontal(name='createDocForm', method='post', enctype='multipart/form-data')
+        .form-group(class=validation.title ? 'has-error' : '')
+            label.col-sm-2.control-label(for='title-field') Title
+            .col-sm-10
+                input.form-control#title-field(name='title', type='text', value=doc.title)
+                - if (validation.title)
+                    span.help-block= validation.title.message
+
+        .form-group
+            label.col-sm-2.control-label(for='language-from') Translation
+            div(class=validation.languageFrom ? 'has-error' : '')
+                label.col-sm-1.control-label from
+                .col-sm-4
+                    select.form-control#language-from(name='languageFrom')
+                        option(value='')
+                        - each type, key in languages
+                            - if (doc.languageFrom == key)
+                                option(value=key, selected)= type
+                            - else 
+                                option(value=key)= type
+                    - if (validation.languageFrom)
+                        span.help-block= validation.languageFrom.message
+
+
+            div(class=validation.languageTo ? 'has-error' : '')
+                label.col-sm-1.control-label to
+                .col-sm-4
+                    select.form-control#language-to(name='languageTo')
+                        option(value='')
+                        - each type, key in languages
+                            - if (doc.languageTo == key)
+                                option(value=key, selected)= type
+                            - else 
+                                option(value=key)= type
+                    - if (validation.languageTo)
+                        span.help-block= validation.languageTo.message
+
+        .form-group(class=validation.file ? 'has-error' : '')
+            label.col-sm-2.control-label(for='file-field') Subtitles file
+            .col-sm-10
+                input.uploader#file-field(type='file', name='file')
+                - if (validation.file)
+                    span.help-block= validation.file.message
+
+        .form-group(class=validation.encoding ? 'has-error' : '')
+            label.col-sm-2.control-label(for='encoding') File encoding
+            .col-sm-3
+                select.form-control#encoding(name='encoding')
+                    - if (doc.encoding === 'utf-8')
+                        option(value='utf-8', selected) UTF-8
+                        option(value='cp1251') Windows 1251
+                    - else
+                        option(value='utf-8') UTF-8
+                        option(value='cp1251', selected) Windows 1251
+
+
+        - if (typeof locals.referer !== 'undefined')
+            input(type='hidden', name='referer', value=locals.referer)
+
+        .form-group
+            .col-sm-2
+            .col-sm-4
+                input(type='submit', value='Create').btn.btn-primary
+

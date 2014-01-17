@@ -39,6 +39,7 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.cookieParser());
 app.use(express.urlencoded());
+app.use(express.multipart());
 app.use(express.methodOverride());
 
 // sessions

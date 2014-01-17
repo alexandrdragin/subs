@@ -2,6 +2,7 @@
 
 exports.init = function(app) {
     require('./user').init(app);
+    require('./doc').init(app);
 
     app.get(/^\/partial\/([\da-zA-Z\/]+)$/, partial);
     app.get('/', index);

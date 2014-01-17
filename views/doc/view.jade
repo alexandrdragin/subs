@@ -1,0 +1,55 @@
+extends ../layout
+
+block container
+    ol.breadcrumb
+        li
+            a(href='/') Main page
+        li.active #{doc.originalTitle} - #{doc.translationTitle}
+
+    div.page-header
+        h3 #{doc.originalTitle} / #{doc.translationTitle}
+
+    .col-sm-8
+        .view-description
+            - if (doc.image) 
+                img(src='/img/tmp.jpg')
+            - if (doc.desciption)
+                |= doc.desciption
+        .page-header
+            h4 Translations
+
+        - if (subdocs.length)
+            table.table
+                thead
+                    tr
+                        th Title
+                        th(width='10%') Download
+                //- option(ng-repeat='(key, name) in languages', value='{{key}}') {{name}}
+                tbody
+                    - each sd in subdocs
+                        tr
+                            td
+                                a(href='doc/#{doc.did}/#{sd.sid}/translate') #{sd.title}
+                            td
+                                a(href='doc/#{doc.did}/#{sd.sid}/download/translation') Translation
+                                | 
+                                a(href='doc/#{doc.did}/#{sd.sid}/download/original') Original
+
+
+block side-panel
+    .col-sm-4
+        a.pull-right.btn.btn-primary.btn-sm.active(href='/doc/#{doc.did}/-/add') Add new translation
+        br
+        br
+        table.table
+            tr
+                td Owner
+                td
+                    a(href='/user/#{owner.uid}') #{owner.name}
+            tr
+                td Original language
+                td #{doc.languageFrom}
+            tr
+                td Translation language
+                td #{doc.languageTo}
+
