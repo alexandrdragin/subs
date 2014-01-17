@@ -50,6 +50,8 @@ app.use(express.session({
     cookie: { maxAge: new Date(Date.now() + 3600 * 24 * 30 * 1000) }
 }));
 
+require('./http-errors').init(app);
+
 // general
 // app.use(require('less-middleware')({ src: path.join(__dirname, 'public') }));
 app.use(express.static(path.join(__dirname, 'public')));

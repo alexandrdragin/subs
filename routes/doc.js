@@ -13,6 +13,10 @@ exports.init = function(app) {
     app.post('/doc/create', app.user.level('user'), docCreateSubmit);
 
     app.get('/doc/:did', app.user.level('public'), docView);
+
+
+    app.get('/doc/:did/download/original', app.user.level('public'), downloadOriginal);
+    app.get('/doc/:did/download/translation', app.user.level('public'), downloadTranslation);
 };
 
 var languages = {
@@ -92,6 +96,10 @@ var docCreateSubmit = function(req, res) {
                 });
         }
 
+        for (var i = 0; i < subsItems.length; i++) {
+            subsItems[i].tid = subsItems[i].id;
+        }
+
         var doc = new Doc(data);
         doc.items = subsItems;
         doc.user = req.user;
@@ -122,5 +130,53 @@ var docCreateSubmit = function(req, res) {
 
 
 var docView = function(req, res) {
-    res.end('view');
+    var id = req.params.id;
+
+    // res.http404(req, res);
+
+    Doc.findOne(id, '-items')
+        .populate('user')
+        .exec(function(err, doc) {
+            if (err) {
+                logger.error(err);
+                return res.http500(req, res);
+            }
+
+            if (!doc) {
+                return res.http404(req, res);
+            }
+
+            res.render('doc/view', {
+                doc: doc
+            });
+        });
+};
+
+var downloadOriginal = function(req, res) {
+    var id = req.params.id;
+
+    Doc.findOne(id, function(err, doc) {
+        if (err) {
+            logger.error(err);
+            return res.http500(req, res);
+        }
+
+        if (!doc) {
+            return res.http404(req, res);
+        }
+
+        try {
+            var contents = parser.toSrt(doc.items);
+            res.setHeader('Content-Disposition', 'attachment; filename=' + doc.title + '.srt');
+            res.setHeader('Content-type', 'text/srt');
+            return res.end(contents);
+        } catch (err) {
+            logger.error(err);
+            return res.http500(req, res);
+        }
+    });
+};
+
+var downloadTranslation = function(req, res) {
+
 };

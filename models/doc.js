@@ -12,8 +12,9 @@ var doc = new mongoose.Schema({
     updated: { type: Date, default: Date.now },
 
     items: [{
-        startTime: { type: Number, required: true },
-        endTime: { type: Number, required: true },
+        id: { type: String, required: true },
+        startTime: { type: String, required: true },
+        endTime: { type: String, required: true },
         text: { type: String, required: true },
 
         translations: [{

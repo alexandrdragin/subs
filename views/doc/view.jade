@@ -4,10 +4,10 @@ block container
     ol.breadcrumb
         li
             a(href='/') Main page
-        li.active #{doc.originalTitle} - #{doc.translationTitle}
+        li.active= doc.title
 
     div.page-header
-        h3 #{doc.originalTitle} / #{doc.translationTitle}
+        h3= doc.title
 
     .col-sm-8
         .view-description
@@ -16,36 +16,20 @@ block container
             - if (doc.desciption)
                 |= doc.desciption
         .page-header
-            h4 Translations
-
-        - if (subdocs.length)
-            table.table
-                thead
-                    tr
-                        th Title
-                        th(width='10%') Download
-                //- option(ng-repeat='(key, name) in languages', value='{{key}}') {{name}}
-                tbody
-                    - each sd in subdocs
-                        tr
-                            td
-                                a(href='doc/#{doc.did}/#{sd.sid}/translate') #{sd.title}
-                            td
-                                a(href='doc/#{doc.did}/#{sd.sid}/download/translation') Translation
-                                | 
-                                a(href='doc/#{doc.did}/#{sd.sid}/download/original') Original
-
+            h4 Actions
+        a.btn.btn-primary.btn-sm.active(href='/doc/#{doc.id}/download/original') download original
+        a.btn.btn-primary.btn-sm.active(href='/doc/#{doc.id}/download/translation') download translation
 
 block side-panel
     .col-sm-4
-        a.pull-right.btn.btn-primary.btn-sm.active(href='/doc/#{doc.did}/-/add') Add new translation
+        a.pull-right.btn.btn-success.btn-sm.active(href='/doc/#{doc.id}/translate') translate
         br
         br
         table.table
             tr
                 td Owner
                 td
-                    a(href='/user/#{owner.uid}') #{owner.name}
+                    a(href='/user/#{doc.user.login}') #{doc.user.username}
             tr
                 td Original language
                 td #{doc.languageFrom}
