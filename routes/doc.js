@@ -144,9 +144,7 @@ var docCreateSubmit = function(req, res) {
 var docView = function(req, res) {
     var id = req.params.id;
 
-    // res.http404(req, res);
-
-    Doc.findById(id, '-items')
+    Doc.findById(id)
         .populate('user')
         .exec(function(err, doc) {
             if (err) {
@@ -167,7 +165,7 @@ var docView = function(req, res) {
 var downloadOriginal = function(req, res) {
     var id = req.params.id;
 
-    Doc.findById({ id: id }, function(err, doc) {
+    Doc.findById(id, function(err, doc) {
         if (err) {
             logger.error(err);
             return res.http500(req, res);
@@ -177,15 +175,26 @@ var downloadOriginal = function(req, res) {
             return res.http404(req, res);
         }
 
-        try {
-            var contents = parser.toSrt(doc.items);
-            res.setHeader('Content-Disposition', 'attachment; filename=' + doc.title + '.srt');
-            res.setHeader('Content-type', 'text/srt');
-            return res.end(contents);
-        } catch (err) {
-            logger.error(err);
-            return res.http500(req, res);
-        }
+        Item.find({ doc: id }, null, { sort: 'id' }, function(err, items) {
+            if (err) {
+                logger.error(err);
+                return res.http500(req, res);
+            }
+
+            if (!items.length) {
+                return res.http404(req, res);
+            }
+
+            try {
+                var contents = parser.toSrt(items);
+                res.setHeader('Content-Disposition', 'attachment; filename=' + doc.title + '.srt');
+                res.setHeader('Content-type', 'text/srt');
+                return res.end(contents);
+            } catch (err) {
+                logger.error(err);
+                return res.http500(req, res);
+            }
+        });
     });
 };
 
