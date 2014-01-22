@@ -1,0 +1,76 @@
+extends ../layout
+
+block container
+    #tApp(ng-app='tApp', style='display:none')
+        div(growl)
+
+        div(ng-controller='InfoCtrl')
+            h4.page-header(ng-hide='loading') {{doc.title}}
+
+        .col-sm-10
+            div(ng-controller='PagerCtrl')
+                ul.pagination(ng-show='pageCount > 1', ng-repeat='n in range(1, pageCount)')
+                    li(ng-class='page == n ? "active" : ""')
+                        a(href='/doc/{{id}}/translate/page/{{n}}') {{n}}
+
+
+            div(ng-controller='TranslateCtrl')
+                table.table.translate-table(ng-repeat="item in items")
+                    tr
+                        td.time 
+                            | {{item.startTime}}
+                            br
+                            | {{item.endTime}}
+                        td.original {{item.text}}
+                        td.translation
+                            ul(ng-repeat='tr in item.translations')
+                                li
+                                    | {{tr.text}}
+                                    .pull-right.vote-box(ng-mouseenter='showRatingButtons = true', ng-mouseleave='showRatingButtons = false')
+                                        //- a.rating-down(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, -1)') –
+                                        //- a.rating-up(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, 1)') +
+                                        span.rating {{tr.rating}}
+                            div(ng-show='currentTranslation == "{{item._id}}"')
+                                form(name='submitTranslationForm', novalidate)
+                                    //- hidden(ng-model='titem.iid', value='{{findTranslationByid(item.id)}}')
+                                    textarea.translation-edit-item.form-control(rows='2', ng-model='titem.text', ng-required='true')
+                                    div.translation-edit-bottom-panel
+                                        div.pull-left {{titem.text.length ? titem.text.length : 0}} / {{item.text.length}}
+                                        div.pull-right
+                                            button.btn.btn-default.btn-xs(type='button', ng-click='addTranslation("{{item._id}}")') Cancel
+                                            | 
+                                            button.btn.btn-primary.btn-xs(type='submit', ng-click='submitTranslation("{{item._id}}")', ng-disabled='submitTranslationForm.$invalid') Submit
+                        td.tools
+                            a(href='', ng-click='addTranslation("{{item._id}}")') add
+                            br
+                            a(href='') comment
+            div(ng-controller='PagerCtrl')
+                ul.pagination(ng-show='pageCount > 1', ng-repeat='n in range(1, pageCount)')
+                    li(ng-class='page == n ? "active" : ""')
+                        a(href='/doc/{{id}}/translate/page/{{n}}') {{n}}
+                        
+
+        .col-sm-2 sidebar
+
+block append scripts
+    script(src='/socket.io/socket.io.js')
+    script(src='/lib/angular/angular.js')
+
+    script(src='/lib/angular-route/angular-route.min.js')
+    script(src='/lib/angular-cookies/angular-cookies.min.js')
+    script(src='/lib/angular-socket-io/socket.js')
+
+    script(src='/lib/angular-growl/build/angular-growl.min.js')
+    link(rel='stylesheet', href='/lib/angular-growl/build/angular-growl.min.css')
+
+    script(src='/app/access-config.js')
+
+    script(src='/app/translate/app.js')
+    script(src='/app/translate/controllers.js')
+    script(src='/app/translate/directives.js')
+    script(src='/app/translate/services.js')
+
+    script.
+        $(function() {
+            $('#tApp').show()
+        });

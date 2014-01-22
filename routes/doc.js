@@ -3,20 +3,22 @@ var mongoose = require('mongoose');
 var logger = require('../logger');
 var User = mongoose.model('User');
 var Doc = mongoose.model('Doc');
+var Item = mongoose.model('Item');
 var Iconv = require('iconv').Iconv;
 var parser = require('subtitles-parser');
 var fs = require('fs');
+var async = require('async');
 
 
 exports.init = function(app) {
     app.get('/doc/create', app.user.level('user'), docCreate);
     app.post('/doc/create', app.user.level('user'), docCreateSubmit);
 
-    app.get('/doc/:did', app.user.level('public'), docView);
+    app.get('/doc/:id', app.user.level('public'), docView);
 
 
-    app.get('/doc/:did/download/original', app.user.level('public'), downloadOriginal);
-    app.get('/doc/:did/download/translation', app.user.level('public'), downloadTranslation);
+    app.get('/doc/:id/download/original', app.user.level('public'), downloadOriginal);
+    app.get('/doc/:id/download/translation', app.user.level('public'), downloadTranslation);
 };
 
 var languages = {
@@ -96,34 +98,44 @@ var docCreateSubmit = function(req, res) {
                 });
         }
 
-        for (var i = 0; i < subsItems.length; i++) {
-            subsItems[i].tid = subsItems[i].id;
-        }
-
         var doc = new Doc(data);
-        doc.items = subsItems;
-        doc.user = req.user;
-        doc.save(function(err) {
+
+        async.each(subsItems, function(item, callback) {
+            item.doc = doc;
+            new Item(item).save(callback);
+        }, function(err) {
             if (err) {
-                var errors;
-                var validation = {};
-
-                if (err.name === 'ValidationError') {
-                    validation = err.errors;
-                } else {
-                    logger.error(err);
-                    errors = ['Server error'];
-                }
-
                 return res.render('doc/create', {
-                    languages: languages,
-                    doc: data,
-                    errors: errors,
-                    validation: validation
-                });
+                        languages: languages,
+                        doc: data,
+                        validation: {},
+                        errors: ['Server error']
+                    });
             }
 
-            res.redirect('/doc/' + doc.id);
+            doc.user = req.user;
+            doc.save(function(err) {
+                if (err) {
+                    var errors;
+                    var validation = {};
+
+                    if (err.name === 'ValidationError') {
+                        validation = err.errors;
+                    } else {
+                        logger.error(err);
+                        errors = ['Server error'];
+                    }
+
+                    return res.render('doc/create', {
+                        languages: languages,
+                        doc: data,
+                        errors: errors,
+                        validation: validation
+                    });
+                }
+
+                res.redirect('/doc/' + doc.id);
+            });
         });
     });
 };
@@ -134,7 +146,7 @@ var docView = function(req, res) {
 
     // res.http404(req, res);
 
-    Doc.findOne(id, '-items')
+    Doc.findById(id, '-items')
         .populate('user')
         .exec(function(err, doc) {
             if (err) {
@@ -155,7 +167,7 @@ var docView = function(req, res) {
 var downloadOriginal = function(req, res) {
     var id = req.params.id;
 
-    Doc.findOne(id, function(err, doc) {
+    Doc.findById({ id: id }, function(err, doc) {
         if (err) {
             logger.error(err);
             return res.http500(req, res);

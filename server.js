@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('./config');
+var logger = require('./logger');
 var express = require('express');
 var fs = require('fs');
 
@@ -9,6 +9,9 @@ var path = require('path');
 
 var app = express();
 
+var config = require('./config');
+app.config = config.dev;
+
 // development only
 if ('development' === app.get('env')) {
     app.use(express.errorHandler());
@@ -16,7 +19,7 @@ if ('development' === app.get('env')) {
 
 // connect to mongo-db
 var mongoose = require('mongoose');
-mongoose.connect(config.dev.mongo);
+mongoose.connect(app.config.mongo);
 fs.readdirSync('./models').forEach(function(file) {
     if (~file.indexOf('.js')) {
         require('./models/' + file);
@@ -26,8 +29,8 @@ fs.readdirSync('./models').forEach(function(file) {
 // redis
 var RedisStore = require('connect-redis')(express);
 var redisStore = new RedisStore({
-        host: config.dev.redis.host,
-        port: config.dev.redis.port
+        host: app.config.redis.host,
+        port: app.config.redis.port
     });
 
 // all environments
@@ -44,7 +47,7 @@ app.use(express.methodOverride());
 
 // sessions
 app.use(express.session({
-    secret: config.dev.session.secret,
+    secret: app.config.session.secret,
     store: redisStore,
     maxAge: { maxAge: new Date(Date.now() + 3600 * 24 * 30 * 1000) },
     cookie: { maxAge: new Date(Date.now() + 3600 * 24 * 30 * 1000) }
@@ -59,6 +62,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 3rd party libraries
 app.use('/lib', express.static(path.join(__dirname, 'lib')));
 
+
+// client-access-config
+app.use('/app/access-config.js', function(req, res, next) { res.sendfile(path.join(__dirname, 'access-config.js')); });
+
 // client-apps
 app.use('/app', express.static(path.join(__dirname, 'app')));
 
@@ -69,7 +76,9 @@ require('./user').init(app);
 require('./routes').init(app);
 app.use(app.router);
 
+var server = http.createServer(app);
+require('./socket').init(server, app, redisStore);
 
-http.createServer(app).listen(app.get('port'), function() {
-    console.log('Express server listening on port ' + app.get('port'));
+server.listen(app.get('port'), function() {
+    logger.info('Express server listening on port ' + app.get('port'));
 });

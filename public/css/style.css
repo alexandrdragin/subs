@@ -79,3 +79,16 @@ body {
     background: lightpink;
     padding: 5px;
 }
+
+.growl {
+    margin-top: 50px;
+    z-index: 9999;
+}
+
+.growl-item.ng-enter,
+.growl-item.ng-leave {
+    -webkit-transition:3s linear all;
+    -moz-transition:3s linear all;
+    -o-transition:3s linear all;
+    transition:3s linear all;
+}
