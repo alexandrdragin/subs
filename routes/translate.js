@@ -18,8 +18,6 @@ var translate = function(req, res) {
             return res.http500(req, res);
         }
 
-
-        console.log(doc);
         if (!doc) {
             return res.http404(req, res);
         }

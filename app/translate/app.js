@@ -4,8 +4,10 @@ angular.module('tApp', [
     'ngRoute',
     'angular-growl',
     'btford.socket-io',
+    'ngSanitize',
 
     'tApp.controllers',
+    'tApp.filters',
     'tApp.directives',
     'tApp.factories'
 

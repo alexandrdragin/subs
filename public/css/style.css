@@ -61,7 +61,7 @@ body {
     text-decoration: none;
     color: white;
 }
-
+info
 .rating {
     cursor: pointer;
     background: lightgrey;
@@ -91,4 +91,37 @@ body {
     -moz-transition:3s linear all;
     -o-transition:3s linear all;
     transition:3s linear all;
+}
+
+ul.translation-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid lightgrey;
+}
+
+
+
+.translation-element {
+    padding: 5px 0;
+}
+
+.translation-element .text {
+
+}
+
+.translation-element .info {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: lightgrey;
+}
+
+.translation-element .info a {
+    color: lightgrey;
+}
+
+.translation-element .info li {
+    margin: 0 10px;
+    display: inline;
 }

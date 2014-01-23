@@ -25,4 +25,10 @@ var item = new mongoose.Schema({
     }]
 });
 
+item.pre('save', function(next) {
+    // sort translations by rating/time
+
+    next();
+});
+
 module.exports = mongoose.model('Item', item);

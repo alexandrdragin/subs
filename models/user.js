@@ -4,7 +4,11 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 
 var user = new mongoose.Schema({
-    email: { type: String, required: true },
+    // secure data
+    salt: { type: String, required: true, select: false },
+    hashedPassword: { type: String, required: true, select: false },
+    email: { type: String, required: true, select: false },
+
     username: { type: String, required: true }, // username to display
     login:  { type: String, required: false },  // lower case of username (automatically generates on create)
     role: { type: String, 'default': 'user' },
@@ -12,11 +16,6 @@ var user = new mongoose.Schema({
     // misc
     created: { type: Date, 'default': Date.now() },
 
-    // password data
-    secure: {
-        salt: String,
-        hashedPassword: String
-    },
 
     disabled: { type: Boolean, 'default': false }
 });
@@ -26,8 +25,8 @@ user
   .virtual('password')
     .set(function(password) {
         this._password = password;
-        this.secure.salt = this.makeSalt();
-        this.secure.hashedPassword = this.encryptPassword(password);
+        this.salt = this.makeSalt();
+        this.hashedPassword = this.encryptPassword(password);
     })
     .get(function(val) { return val; });
 
@@ -43,7 +42,7 @@ user.path('email').validate(function(email) {
     return regex.test(email);
 }, 'Invalid email address');
 
-user.path('secure.hashedPassword').validate(function(password) {
+user.path('hashedPassword').validate(function(password) {
     if (!password.length) {
         return this.invalidate('password', 'Password cannot be blank');
     }
@@ -115,7 +114,7 @@ user.method({
 
         var encrypred;
         try {
-            encrypred = crypto.createHmac('sha1', this.secure.salt).update(password).digest('hex');
+            encrypred = crypto.createHmac('sha1', this.salt).update(password).digest('hex');
             return encrypred;
         } catch (err) {
             return '';

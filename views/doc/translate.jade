@@ -21,27 +21,31 @@ block container
                             | {{item.startTime}}
                             br
                             | {{item.endTime}}
-                        td.original {{item.text}}
+                        td(ng-bind-html='item.text | stripHTML | newLine').original {{}}
                         td.translation
-                            ul(ng-repeat='tr in item.translations')
-                                li
-                                    | {{tr.text}}
-                                    .pull-right.vote-box(ng-mouseenter='showRatingButtons = true', ng-mouseleave='showRatingButtons = false')
-                                        //- a.rating-down(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, -1)') –
-                                        //- a.rating-up(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, 1)') +
+                            ul.translation-items(ng-repeat='tr in item.translations')
+                                li.translation-element
+                                    p.text(ng-bind-html='tr.text | stripHTML | newLine')
+                                    ul.info
+                                        li 
+                                            a(href='/user/{{tr.user.login}}', target='_self') {{tr.user.username}}
+                                        li {{formatTime(tr.updated)}}
+                                    //- .pull-right.vote-box(ng-mouseenter='showRatingButtons = true', ng-mouseleave='showRatingButtons = false')
+                                        a.rating-down(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, -1)') –
+                                        a.rating-up(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, 1)') +
                                         span.rating {{tr.rating}}
-                            div(ng-show='currentTranslation == "{{item._id}}"')
+                            div(ng-show='tItem.id === item._id')
                                 form(name='submitTranslationForm', novalidate)
                                     //- hidden(ng-model='titem.iid', value='{{findTranslationByid(item.id)}}')
-                                    textarea.translation-edit-item.form-control(rows='2', ng-model='titem.text', ng-required='true')
+                                    textarea.translation-edit-item.form-control(rows='2', ng-model='tItem.text', ng-required='true')
                                     div.translation-edit-bottom-panel
-                                        div.pull-left {{titem.text.length ? titem.text.length : 0}} / {{item.text.length}}
+                                        div.pull-left {{tItem.text.length}} / {{item.text.length}}
                                         div.pull-right
-                                            button.btn.btn-default.btn-xs(type='button', ng-click='addTranslation("{{item._id}}")') Cancel
+                                            button.btn.btn-default.btn-xs(type='button', ng-click='cancelTranslation(item._id)') Cancel
                                             | 
-                                            button.btn.btn-primary.btn-xs(type='submit', ng-click='submitTranslation("{{item._id}}")', ng-disabled='submitTranslationForm.$invalid') Submit
+                                            button.btn.btn-primary.btn-xs(type='submit', ng-click='submitTranslation(item._id)', ng-disabled='submitTranslationForm.$invalid') Submit
                         td.tools
-                            a(href='', ng-click='addTranslation("{{item._id}}")') add
+                            a(href='', ng-click='addTranslation(item._id)') add
                             br
                             a(href='') comment
             div(ng-controller='PagerCtrl')
@@ -59,6 +63,7 @@ block append scripts
     script(src='/lib/angular-route/angular-route.min.js')
     script(src='/lib/angular-cookies/angular-cookies.min.js')
     script(src='/lib/angular-socket-io/socket.js')
+    script(src='/lib/angular-sanitize/angular-sanitize.min.js')
 
     script(src='/lib/angular-growl/build/angular-growl.min.js')
     link(rel='stylesheet', href='/lib/angular-growl/build/angular-growl.min.css')
@@ -69,6 +74,8 @@ block append scripts
     script(src='/app/translate/controllers.js')
     script(src='/app/translate/directives.js')
     script(src='/app/translate/services.js')
+    script(src='/app/translate/filters.js')
+    script(src='/app/translate/utils.js')
 
     script.
         $(function() {

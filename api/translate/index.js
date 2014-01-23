@@ -8,18 +8,34 @@ var Item = mongoose.model('Item');
 
 exports.init = function(io) {
     io.sockets.on('connection', function(socket) {
+        socket.room = null;
+
         socket.on('translation:getInfo', getInfo);
         socket.on('translation:getPageCount', getPageCount);
         socket.on('translation:getItems', getItems);
+        socket.on('translation:submitTranslation', submitTranslation);
     });
 };
 
 var getInfo = function(data, callback) {
+    var socket = this;
+
     Doc.findById(data.id, function(err, doc) {
         if (err) {
             logger.error(err);
             return callback(['Server error'], null);
         }
+
+        if (socket.room) {
+            socket.leave(socket.room.name);
+        }
+
+        socket.room = {
+            name: 'translation:room:' + doc.id,
+            id: doc.id
+        };
+
+        socket.join(socket.room.name);
 
         callback(err, doc);
     });
@@ -49,7 +65,12 @@ var getItems = function(data, callback) {
     data.page = data.page || 1;
     data.page--;
 
-    Item.find({ doc: data.id }, null, { skip: data.page * pageLimit, limit: pageLimit, sort: 'id' }, function(err, items) {
+    Item.find({ doc: data.id })
+        .sort('id')
+        .skip(data.page * pageLimit)
+        .limit(pageLimit)
+        .populate('translations.user')
+        .exec(function(err, items) {
         if (err) {
             logger.error(err);
             return callback(['Server error'], null);
@@ -62,3 +83,34 @@ var getItems = function(data, callback) {
         callback(err, items);
     });
 };
+
+var submitTranslation = function(data, callback) {
+    var socket = this;
+    var user = socket.handshake.user;
+
+    Item.findById(data.id)
+        .populate('doc translations.user')
+        .exec(function(err, item) {
+            if (err) {
+                logger.error(err);
+                return callback(['Server error'], null);
+            }
+
+            item.translations.push({
+                text: data.text,
+                user: user
+            });
+
+            item.save(function(err) {
+                if (err) {
+                    logger.error(err);
+                    return callback(['Server error'], null);
+                }
+
+                if (socket.room) {
+                    socket.manager.sockets.in(socket.room.name).emit('translation:newTranslation', item);
+                }
+            });
+        });
+};
+

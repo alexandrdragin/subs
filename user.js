@@ -34,7 +34,7 @@ exports.init = function(app) {
 
     passport.use(new LocalStrategy(
         function(login, password, done) {
-            User.findOne({ $or: [{ login: login.toLowerCase() }, { email: login.toLowerCase() }] }, function(err, user) {
+            User.findOne({ $or: [{ login: login.toLowerCase() }, { email: login.toLowerCase() }] }, '+email +hashedPassword +salt', function(err, user) {
                 if (err) {
                     logger.error('Error fetching user: ' + err);
                     return done(err);
@@ -45,7 +45,7 @@ exports.init = function(app) {
                     return done(null, false, { message: 'Unknown user ' + login });
                 }
 
-                if (user.secure.hashedPassword !== user.encryptPassword(password)) {
+                if (user.hashedPassword !== user.encryptPassword(password)) {
                     logger.debug('User password is incorrect');
                     return done(null, false, { message: 'Invalid password' });
                 }

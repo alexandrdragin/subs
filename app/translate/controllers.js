@@ -6,8 +6,6 @@ angular.module('tApp.controllers', [])
             processRoute();
         });
 
-        console.log('InfoCtrl init');
-
         var processRoute = function() {
             if (!$scope.loading) {
                 return;
@@ -38,10 +36,23 @@ angular.module('tApp.controllers', [])
 
     .controller('TranslateCtrl', ['$scope', 'socket', '$route', 'growl', function($scope, socket, $route, growl) {
         $scope.loading = true;
+        $scope.items = [];
         $scope.$on('$routeChangeSuccess', function($currentRoute, $previousRoute) {
             $scope.loading = true;
             processRoute();
         });
+
+        var findItem = function(itemId) {
+            var item = null;
+
+            for (var i = 0; i < $scope.items.length; i++) {
+                if ($scope.items[i]._id === itemId) {
+                    return $scope.items[i];
+                }
+            }
+
+            return item;
+        };
 
         var processRoute = function() {
             $scope.id = $route.current.params.id;
@@ -57,13 +68,62 @@ angular.module('tApp.controllers', [])
                     for (var i = 0; i < err.length; i++) {
                         growl.addErrorMessage(err[i]);
                     }
+                    $scope.items = [];
+                } else {
+                    $scope.items = response;
+                    console.log(response);
                 }
 
-                $scope.items = response;
                 $scope.loading = false;
             });
         };
 
+        $scope.tItem = {};
+        $scope.addTranslation = function(itemId) {
+            var item = findItem(itemId);
+
+            if (!item) {
+                return;
+            }
+
+            if ($scope.tItem.id === itemId) {
+                $scope.tItem = {};
+                return;
+            }
+
+            $scope.tItem = {
+                text: '',
+                id: itemId
+            };
+        };
+
+        $scope.cancelTranslation = function() {
+            $scope.tItem = {};
+        };
+
+        $scope.submitTranslation = function() {
+            if (!$scope.tItem.text.length) {
+                return;
+            }
+
+            socket.emit('translation:submitTranslation', $scope.tItem, function(err) {
+                console.log(err);
+            });
+        };
+
+        socket.on('translation:newTranslation', function(data) {
+            var item = findItem(data._id);
+            if (!item) {
+                return;
+            }
+
+            item.translations = data.translations;
+            $scope.tItem = {};
+        });
+
+        $scope.formatTime = function(str) {
+            return (new Date(str)).format('dd.MM.yyyy h:mm:ss');
+        };
     }])
 
     .controller('PagerCtrl', ['$scope', 'socket', '$route', 'growl', function($scope, socket, $route, growl) {
@@ -106,8 +166,6 @@ angular.module('tApp.controllers', [])
         // socket.on('send:name', function(data) {
         //     $scope.name = data.name;
         // });
-
-
 
     }])
 ;

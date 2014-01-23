@@ -11,7 +11,8 @@
     "angular-cookies": "*",
     "angular-route": "*",
     "angular-socket-io": "*",
-    "angular-growl": "*"
+    "angular-growl": "*",
+    "angular-sanitize": "*"
   },
   "devDependencies": {}
 }
