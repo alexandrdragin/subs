@@ -18,9 +18,9 @@ block container
                 table.table.translate-table(ng-repeat="item in items")
                     tr
                         td.time 
-                            | {{item.startTime}}
+                            | {{formatSubtitleTime(item.startTime)}}
                             br
-                            | {{item.endTime}}
+                            | {{formatSubtitleTime(item.endTime)}}
                         td(ng-bind-html='item.text | stripHTML | newLine').original {{}}
                         td.translation
                             ul.translation-items(ng-repeat='tr in item.translations')
@@ -46,8 +46,8 @@ block container
                                             button.btn.btn-primary.btn-xs(type='submit', ng-click='submitTranslation(item._id)', ng-disabled='submitTranslationForm.$invalid') Submit
                         td.tools
                             a(href='', ng-click='addTranslation(item._id)') add
-                            br
-                            a(href='') comment
+                            //- br
+                            //- a(href='') comment
             div(ng-controller='PagerCtrl')
                 ul.pagination(ng-show='pageCount > 1', ng-repeat='n in range(1, pageCount)')
                     li(ng-class='page == n ? "active" : ""')

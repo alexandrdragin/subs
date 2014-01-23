@@ -9,6 +9,7 @@ var item = new mongoose.Schema({
     endTime: { type: Number, required: true },
     text: { type: String, required: true },
 
+    haveTranslation: { type: Boolean, default: false },
     translations: [{
         text: String,
         updated: { type: Date, default: Date.now },
@@ -30,11 +31,7 @@ var item = new mongoose.Schema({
 item.pre('save', function(next) {
     // sort translations by rating/time
     var cmp = function(key, order) {
-        var dir = -1;
-        if (order === 'desc') {
-            dir = 1;
-        }
-
+        var dir = (order === 'desc' ? 1 : -1);
         return function(a, b) {
             if (a[key] < b[key]) { return dir; }
             if (a[key] > b[key]) { return -dir; }
@@ -44,6 +41,8 @@ item.pre('save', function(next) {
 
     this.translations.sort(cmp('updated', 'desc'));
     this.translations.sort(cmp('rating', 'desc'));
+
+    this.haveTranslation = this.translations.length ? true : false;
 
     next();
 });

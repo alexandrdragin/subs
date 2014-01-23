@@ -27,11 +27,6 @@ angular.module('tApp.controllers', [])
                 $scope.loading = false;
             });
         };
-
-        // socket.on('translation:setInfo', function(response) {
-        //     $scope.title = response.subdoc.title;
-        //     // $scope.translationTitle = response.translationTitle;
-        // });
     }])
 
     .controller('TranslateCtrl', ['$scope', 'socket', '$route', 'growl', function($scope, socket, $route, growl) {
@@ -122,6 +117,26 @@ angular.module('tApp.controllers', [])
 
         $scope.formatTime = function(str) {
             return (new Date(str)).format('dd.MM.yyyy h:mm:ss');
+        };
+
+        $scope.formatSubtitleTime = function(val) {
+            var measures = [3600000, 60000, 1000];
+            var time = [];
+
+            for (var i in measures) {
+                var res = (val / measures[i] >> 0).toString();
+
+                if (res.length < 2) { res = '0' + res; }
+                val %= measures[i];
+                time.push(res);
+            }
+
+            var ms = val.toString();
+            if (ms.length < 3) {
+                for (i = 0; i <= 3 - ms.length; i++) { ms = '0' + ms; }
+            }
+
+            return time.join(':') + ',' + ms;
         };
     }])
 

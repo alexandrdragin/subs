@@ -107,6 +107,17 @@ var submitTranslation = function(data, callback) {
                     return callback(['Server error'], null);
                 }
 
+                item.doc.calculateProgress(function(err) {
+                    if (err) {
+                        logger.error(err);
+                        return callback(['Server error'], null);
+                    }
+
+                    if (socket.room) {
+                        socket.manager.sockets.in(socket.room.name).emit('translation:translationProgress', item.doc.progress);
+                    }
+                });
+
                 if (socket.room) {
                     socket.manager.sockets.in(socket.room.name).emit('translation:newTranslation', item);
                 }
