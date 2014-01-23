@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose');
 
 var item = new mongoose.Schema({
@@ -27,6 +29,21 @@ var item = new mongoose.Schema({
 
 item.pre('save', function(next) {
     // sort translations by rating/time
+    var cmp = function(key, order) {
+        var dir = -1;
+        if (order === 'desc') {
+            dir = 1;
+        }
+
+        return function(a, b) {
+            if (a[key] < b[key]) { return dir; }
+            if (a[key] > b[key]) { return -dir; }
+            return 0;
+        };
+    };
+
+    this.translations.sort(cmp('updated', 'desc'));
+    this.translations.sort(cmp('rating', 'desc'));
 
     next();
 });

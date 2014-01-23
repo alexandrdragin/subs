@@ -71,7 +71,6 @@ angular.module('tApp.controllers', [])
                     $scope.items = [];
                 } else {
                     $scope.items = response;
-                    console.log(response);
                 }
 
                 $scope.loading = false;
