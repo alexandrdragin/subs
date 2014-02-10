@@ -1,0 +1,27 @@
+extends ../layout
+
+block container
+    div.page-header
+        h3 Download #{doc.title}
+
+    - if (errors) {
+        - each error in errors
+            .alert.alert-danger= error
+    - }
+
+    form.form-horizontal(name='downloadTranslationForm', method='post')
+        .form-group
+            label.col-sm-2.control-label(for='title-field') Untranslated fragments
+            .col-sm-10
+                div
+                    input.form-control(name='skipUntranslated', type='radio', value='false', checked)
+                    span Use fragment from original subtitles
+                div
+                    input.form-control(name='skipUntranslated', type='radio', value='true')
+                    span Skip
+
+        .form-group
+            .col-sm-2
+            .col-sm-4
+                input(type='submit', value='Download').btn.btn-primary
+

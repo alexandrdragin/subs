@@ -8,14 +8,61 @@ block container
             h4.page-header(ng-hide='loading') {{doc.title}}
 
         .col-sm-10
-            div(ng-controller='PagerCtrl')
-                ul.pagination(ng-show='pageCount > 1', ng-repeat='n in range(1, pageCount)')
+            div.translation-pager(ng-controller='PagerCtrl')
+                a(ng-show='page > 1', href='/doc/{{id}}/translate/page/{{page * 1 - 1}}').glyphicon.glyphicon-arrow-left
+                span Page 
+                    input(ng-model='page', ng-enter='submitPage(page)', size=2)
+                span of {{pageCount}}
+                a(ng-show='page < pageCount', href='/doc/{{id}}/translate/page/{{page * 1 + 1}}').glyphicon.glyphicon-arrow-right
+
+
+                //- ul.pagination(ng-show='pageCount > 1', ng-repeat='n in range(1, pageCount)')
                     li(ng-class='page == n ? "active" : ""')
                         a(href='/doc/{{id}}/translate/page/{{n}}') {{n}}
 
 
             div(ng-controller='TranslateCtrl')
-                table.table.translate-table(ng-repeat="item in items")
+                table.translation-table
+                    thead
+                        tr
+                    tbody(ng-repeat="item in items")
+                        tr
+                            td.original
+                                div.text(ng-bind-html='item.text | stripHTML | newLine')
+                                div.info \#{{item.id}}, {{formatSubtitleTime(item.startTime)}} → {{formatSubtitleTime(item.endTime)}}
+                            td.translation
+                                div.translation-edit-dialog(ng-show='tItem.id === item._id')
+                                    form(name='submitTranslationForm', novalidate)
+                                        //- hidden(ng-model='titem.iid', value='{{findTranslationByid(item.id)}}')
+                                        textarea.translation-edit-item.form-control(rows='2', ng-model='tItem.text', ng-required='true')
+                                        div.translation-edit-bottom-panel
+                                            div.pull-left {{tItem.text.length}} / {{item.text.length}}
+                                            div.pull-right
+                                                button.btn.btn-default.btn-xs(type='button', ng-click='cancelTranslation(item._id)') Cancel
+                                                | 
+                                                button.btn.btn-primary.btn-xs(type='submit', ng-click='submitTranslation(item._id)', ng-disabled='submitTranslationForm.$invalid') Submit
+                                        div.clearfix
+                                ul.translation-items(ng-repeat='tr in item.translations')
+                                    li.translation-element
+                                        p.text(ng-bind-html='tr.text | stripHTML | newLine')
+                                        ul.info
+                                            li 
+                                                a(href='/user/{{tr.user.login}}', target='_self') {{tr.user.username}}
+                                            li {{formatTime(tr.updated)}}
+                                        //- .pull-right.vote-box(ng-mouseenter='showRatingButtons = true', ng-mouseleave='showRatingButtons = false')
+                                            a.rating-down(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, -1)') –
+                                            a.rating-up(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, 1)') +
+                                            span.rating {{tr.rating}}
+                            td.tools
+                                ul
+                                    li
+                                        a.glyphicon.glyphicon-plus(href='', ng-click='addTranslation(item._id)')
+                                    li
+                                        a.glyphicon.glyphicon-comment(href='', ng-click='commentTranslation(item._id)')
+                                //- br
+                                //- a(href='') comment                        
+
+                //- table.table.translate-table(ng-repeat="item in items")
                     tr
                         td.time 
                             | {{formatSubtitleTime(item.startTime)}}
@@ -47,12 +94,7 @@ block container
                         td.tools
                             a(href='', ng-click='addTranslation(item._id)') add
                             //- br
-                            //- a(href='') comment
-            div(ng-controller='PagerCtrl')
-                ul.pagination(ng-show='pageCount > 1', ng-repeat='n in range(1, pageCount)')
-                    li(ng-class='page == n ? "active" : ""')
-                        a(href='/doc/{{id}}/translate/page/{{n}}') {{n}}
-                        
+                            //- a(href='') comment                        
 
         .col-sm-2 sidebar
 

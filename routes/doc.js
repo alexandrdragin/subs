@@ -19,6 +19,7 @@ exports.init = function(app) {
 
     app.get('/doc/:id/download/original', app.user.level('public'), downloadOriginal);
     app.get('/doc/:id/download/translation', app.user.level('public'), downloadTranslation);
+    app.post('/doc/:id/download/translation', app.user.level('public'), downloadTranslationSubmit);
 };
 
 var languages = {
@@ -199,5 +200,77 @@ var downloadOriginal = function(req, res) {
 };
 
 var downloadTranslation = function(req, res) {
+    var id = req.params.id;
 
+    Doc.findById(id, '-items', function(err, doc) {
+        if (err) {
+            logger.error(err);
+            return res.http500(req, res);
+        }
+
+        res.render('doc/downloadTranslation', {
+            doc: doc,
+            errors: null
+        });
+    });
+
+};
+
+var downloadTranslationSubmit = function(req, res) {
+    var id = req.params.id;
+    var settings = req.body;
+
+    console.log(settings);
+
+    Doc.findById(id, '-items', function(err, doc) {
+        if (err) {
+            logger.error(err);
+            return res.http500(req, res);
+        }
+
+        Item.find({ doc: id })
+            .sort('id')
+            .populate('translations.user')
+            .exec(function(err, items) {
+                if (err) {
+                    logger.error(err);
+                    return res.http500(req, res);
+                }
+
+                if (!items.length) {
+                    return res.http404(req, res);
+                }
+
+                var result = [];
+                async.each(items, function(item, callback) {
+                    if (item.translations.length) {
+                        result.push({
+                            id: item.id,
+                            startTime: item.startTime,
+                            endTime: item.endTime,
+                            text: item.translations[0].text
+                        });
+                    } else if (settings.skipUntranslated !== 'true') {
+                        result.push({
+                            id: item.id,
+                            startTime: item.startTime,
+                            endTime: item.endTime,
+                            text: item.text
+                        });
+                    }
+                    callback(null);
+                }, function() {
+                    console.log(result);
+                    try {
+                        var contents = parser.toSrt(result);
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + doc.title + '.srt');
+                        res.setHeader('Content-type', 'text/srt');
+                        return res.end(contents);
+                    } catch (err) {
+                        logger.error(err);
+                        return res.http500(req, res);
+                    }
+                });
+            });
+    });
 };

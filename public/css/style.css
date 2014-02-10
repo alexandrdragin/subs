@@ -97,29 +97,110 @@ ul.translation-items {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-bottom: 1px solid lightgrey;
+    /*border-bottom: 1px solid lightgrey;*/
 }
 
+.translation-table tr > td
+{
+  padding: 10px 0;
+}
+
+.translation-table tr
+{
+  border-top: solid 1px grey;
+}
+
+
 .translation-element {
-    padding: 5px 0;
+    border: 1px solid lightgrey;
+    margin: 0px 0 5px 0;
 }
 
 .translation-element .text {
-
+    padding: 0 5px;
 }
 
 .translation-element .info {
     list-style: none;
     margin: 0;
-    padding: 0;
-    color: lightgrey;
+    padding: 3px 0;
+    background: #eee;
+    font-size: 10px;
+
 }
 
 .translation-element .info a {
-    color: lightgrey;
+    color: black;
 }
 
 .translation-element .info li {
     margin: 0 10px;
     display: inline;
+}
+
+.translation-pager {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.translation-pager input {
+    width: 25px;
+}
+
+.translation-pager a, 
+.translation-pager span {
+    margin: 0 5px;
+}
+
+.translation-table {
+    width: 100%;
+}
+
+.original .info {
+    font-size: 10px;
+}
+
+.translation-table .original {
+    width: 50%;
+    padding: 5px;
+    vertical-align: top;
+}
+
+.translation-table .original .text {
+    height: 100%;
+    vertical-align: top;
+}
+
+.translation-table .translation {
+    width: 50%;
+}
+
+.translation-table td {
+    vertical-align: top;
+}
+
+.translation-table .tools {
+    text-align: center;
+    padding: 10px 3px;
+}
+
+.translation-table .tools a {
+    color: black;    
+    text-decoration: none;
+}
+
+.translation-table .tools a:hover {
+    color: #428bca;
+    text-decoration: none;
+}
+
+.translation-table .tools ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 5px;
+    background: #eee;
+}
+
+.translation-edit-dialog {
+    margin-bottom: 10px;
 }

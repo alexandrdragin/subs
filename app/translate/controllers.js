@@ -140,7 +140,7 @@ angular.module('tApp.controllers', [])
         };
     }])
 
-    .controller('PagerCtrl', ['$scope', 'socket', '$route', 'growl', function($scope, socket, $route, growl) {
+    .controller('PagerCtrl', ['$scope', 'socket', '$route', 'growl', '$location', function($scope, socket, $route, growl, $location) {
         $scope.loading = true;
         $scope.$on('$routeChangeSuccess', function($currentRoute, $previousRoute) {
             processRoute();
@@ -175,6 +175,18 @@ angular.module('tApp.controllers', [])
                 $scope.pageCount = null || response;
                 $scope.loading = false;
             });
+        };
+
+        $scope.submitPage = function() {
+            if ($scope.page > $scope.pageCount) {
+                $scope.page = $scope.pageCount;
+            }
+
+            if ($scope.page < 1) {
+                $scope.page = 1;
+            }
+
+            $location.path('/doc/' + $scope.id + '/translate/page/' + $scope.page);
         };
 
         // socket.on('send:name', function(data) {
