@@ -37,6 +37,12 @@ angular.module('tApp.controllers', [])
             processRoute();
         });
 
+        var growlError = function(err) {
+            for (var i = 0; i < err.length; i++) {
+                growl.addErrorMessage(err[i]);
+            }
+        }
+
         var findItem = function(itemId) {
             var item = null;
 
@@ -60,9 +66,7 @@ angular.module('tApp.controllers', [])
 
             socket.emit('translation:getItems', { id: $scope.id, page: $scope.page, filter: $scope.filter }, function(err, response) {
                 if (err) {
-                    for (var i = 0; i < err.length; i++) {
-                        growl.addErrorMessage(err[i]);
-                    }
+                    growlError(err);
                     $scope.items = [];
                 } else {
                     $scope.items = response;
@@ -101,7 +105,9 @@ angular.module('tApp.controllers', [])
             }
 
             socket.emit('translation:submitTranslation', $scope.tItem, function(err) {
-                console.log(err);
+                if (err) {
+                    return growlError(err);
+                }
             });
         };
 
@@ -123,7 +129,7 @@ angular.module('tApp.controllers', [])
             var measures = [3600000, 60000, 1000];
             var time = [];
 
-            for (var i in measures) {
+            for (var i = 0; i < measures.length; i++) {
                 var res = (val / measures[i] >> 0).toString();
 
                 if (res.length < 2) { res = '0' + res; }
@@ -138,6 +144,26 @@ angular.module('tApp.controllers', [])
 
             return time.join(':') + ',' + ms;
         };
+
+        $scope.voteTranslation = function(iid, tid, vote) {
+            socket.emit('translation:vote', { iid: iid, tid: tid, vote: vote }, function(err, response) {
+                if (err) {
+                    return growlError(err);
+                }
+            });
+        };
+
+        socket.on('translation:vote', function(data) {
+            $.each($scope.items, function(i, item) {
+                if (item._id === data.iid) {
+                    $.each(item.translations, function(n, tr) {
+                        if (tr._id === data.tid) {
+                            tr.rating = data.rating;
+                        }
+                    });
+                }
+            });
+        });
     }])
 
     .controller('PagerCtrl', ['$scope', 'socket', '$route', 'growl', '$location', function($scope, socket, $route, growl, $location) {

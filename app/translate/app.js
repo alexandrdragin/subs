@@ -28,18 +28,17 @@ angular.module('tApp', [
         // $routeProvider.otherwise({redirectTo: '/404'});
         $locationProvider.html5Mode(true);
     }])
-    // .run(['$rootScope', '$location', function ($rootScope, $location) {
-    //         $rootScope.$on("$routeChangeStart", function (event, next, current) {
-    //             $rootScope.error = null;
+    .run(['$rootScope', '$location', 'auth', function($rootScope, $location) {
+            // $rootScope.$on("$routeChangeStart", function (event, next, current) {
+            //     $rootScope.error = null;
 
-    //             if (!Auth.authorize(next.access)) {
-    //                 if(Auth.isLoggedIn()) {
-    //                     $location.path('/403');
-    //                 } else {
-    //                     $location.path('/login');
-    //                 }
-    //             }
-    //         });
-
-    //     }])
+            //     if (!Auth.authorize(next.access)) {
+            //         if(Auth.isLoggedIn()) {
+            //             $location.path('/403');
+            //         } else {
+            //             $location.path('/login');
+            //         }
+            //     }
+            // });
+        }])
 ;

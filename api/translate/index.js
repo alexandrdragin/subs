@@ -14,6 +14,7 @@ exports.init = function(io) {
         socket.on('translation:getPageCount', getPageCount);
         socket.on('translation:getItems', getItems);
         socket.on('translation:submitTranslation', submitTranslation);
+        socket.on('translation:vote', voteTranslation);
     });
 };
 
@@ -120,6 +121,61 @@ var submitTranslation = function(data, callback) {
 
                 if (socket.room) {
                     socket.manager.sockets.in(socket.room.name).emit('translation:newTranslation', item);
+                }
+            });
+        });
+};
+
+var voteTranslation = function(data, callback) {
+    var socket = this;
+    var user = socket.handshake.user;
+
+    Item.findById(data.iid)
+        .populate('doc translations.user')
+        .exec(function(err, item) {
+            if (err) {
+                logger.error(err);
+                return callback(['Server error'], null);
+            }
+
+            var trans = null;
+            for (var i = 0; i < item.translations.length; i++) {
+                if (item.translations[i]._id.equals(data.tid)) {
+                    trans = item.translations[i];
+                }
+            }
+
+            if (!trans) {
+                return callback(['Translation not found'], null);
+            }
+
+            for (i = 0; i < trans.voters.length; i++) {
+                if (user._id.equals(trans.voters[i].user)) {
+                    trans.rating -= trans.voters[i].vote;
+                    trans.voters.splice(i, 1);
+                }
+            }
+
+            data.vote = data.vote < 0 ? -1 : 1;
+            trans.voters.push({
+                vote: data.vote,
+                user: user
+            });
+
+            trans.rating += data.vote;
+
+            item.save(function(err) {
+                if (err) {
+                    logger.error(err);
+                    return callback(['Server error'], null);
+                }
+
+                if (socket.room) {
+                    socket.manager.sockets.in(socket.room.name).emit('translation:vote', {
+                        iid: item._id,
+                        tid: trans._id,
+                        rating: trans.rating
+                    });
                 }
             });
         });

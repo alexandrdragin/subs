@@ -37,29 +37,27 @@ angular.module('tApp.factories', ['ngCookies'])
     //     $httpProvider.interceptors.push('myHttpInterceptor');        
     // }])
 
-    // .factory('Auth', [ '$http', '$rootScope', '$cookieStore', function($http, $rootScope, $cookieStore) {
-    //     $rootScope.accessConfig = accessConfig;
-    //     $rootScope.user = $cookieStore.get('user') || null;
+    .factory('auth', [ '$http', '$rootScope', '$cookieStore', function($http, $rootScope, $cookieStore) {
+        $rootScope.accessConfig = accessConfig;
+        $rootScope.user = $cookieStore.get('user') || null;
 
-    //     // $cookieStore.remove('user');
+        return {
+            authorize: function(accessLevel, role) {
+                if(role === undefined)
+                    role = $rootScope.user.role;
 
-    //     return {
-    //         authorize: function(accessLevel, role) {
-    //             if(role === undefined)
-    //                 role = $rootScope.user.role;
+                return accessLevel & role;
+            },
 
-    //             return accessLevel & role;
-    //         },
+            isLoggedIn: function(user) {
+                if (!user) {
+                    user = $rootScope.user;
+                }
 
-    //         isLoggedIn: function(user) {
-    //             if (!user) {
-    //                 user = $rootScope.user;
-    //             }
-
-    //             return !(user.role === accessConfig.roles.public);
-    //         },
-    //         accessConfig: $rootScope.accessConfig,
-    //         user: $rootScope.user
-    //     };
-    // }])
+                return !(user.role === accessConfig.roles.public);
+            },
+            accessConfig: $rootScope.accessConfig,
+            user: $rootScope.user
+        };
+    }])
 ;

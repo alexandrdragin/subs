@@ -57,27 +57,41 @@ body {
     margin-top: 5px;
 }
 
-.vote-box a:hover {
+.votebox a:hover {
     text-decoration: none;
     color: white;
 }
-info
+
 .rating {
     cursor: pointer;
     background: lightgrey;
-    padding: 5px;
+    width: 20px;
+    height: 20px;
+    right: 1px;
+    position: absolute;
+    text-align: center;
 }
 
 .rating-up {
+    position: absolute;
+    top: -20px;
+    right: 1px;
     color: black;
     background: lightgreen;
-    padding: 5px;
+    text-align: center;
+    width: 20px;
+    height: 20px;
 }
 
 .rating-down {
+    position: absolute;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    top: 20px;
+    right: 1px;
     color: black;
     background: lightpink;
-    padding: 5px;
 }
 
 .growl {
@@ -112,6 +126,7 @@ ul.translation-items {
 
 
 .translation-element {
+    position: relative;
     border: 1px solid lightgrey;
     margin: 0px 0 5px 0;
 }
@@ -203,4 +218,10 @@ ul.translation-items {
 
 .translation-edit-dialog {
     margin-bottom: 10px;
+}
+
+.translation-table .votebox {
+    position: absolute;
+    top: 5px;
+    right: 20px;
 }

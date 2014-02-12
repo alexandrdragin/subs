@@ -49,54 +49,19 @@ block container
                                             li 
                                                 a(href='/user/{{tr.user.login}}', target='_self') {{tr.user.username}}
                                             li {{formatTime(tr.updated)}}
-                                        //- .pull-right.vote-box(ng-mouseenter='showRatingButtons = true', ng-mouseleave='showRatingButtons = false')
-                                            a.rating-down(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, -1)') –
-                                            a.rating-up(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, 1)') +
+                                        .votebox(ng-mouseenter='showRatingButtons = true', ng-mouseleave='showRatingButtons = false')
+                                            a.rating-down(ng-show='showRatingButtons && tr.user._id !== user._id', href='', ng-click='voteTranslation(item._id, tr._id, -1)') –
                                             span.rating {{tr.rating}}
+                                            a.rating-up(ng-show='showRatingButtons && tr.user._id !== user._id', href='', ng-click='voteTranslation(item._id, tr._id, 1)') +
+                                            //- div.clearfix
                             td.tools
                                 ul
                                     li
                                         a.glyphicon.glyphicon-plus(href='', ng-click='addTranslation(item._id)')
                                     li
                                         a.glyphicon.glyphicon-comment(href='', ng-click='commentTranslation(item._id)')
-                                //- br
-                                //- a(href='') comment                        
 
-                //- table.table.translate-table(ng-repeat="item in items")
-                    tr
-                        td.time 
-                            | {{formatSubtitleTime(item.startTime)}}
-                            br
-                            | {{formatSubtitleTime(item.endTime)}}
-                        td(ng-bind-html='item.text | stripHTML | newLine').original {{}}
-                        td.translation
-                            ul.translation-items(ng-repeat='tr in item.translations')
-                                li.translation-element
-                                    p.text(ng-bind-html='tr.text | stripHTML | newLine')
-                                    ul.info
-                                        li 
-                                            a(href='/user/{{tr.user.login}}', target='_self') {{tr.user.username}}
-                                        li {{formatTime(tr.updated)}}
-                                    //- .pull-right.vote-box(ng-mouseenter='showRatingButtons = true', ng-mouseleave='showRatingButtons = false')
-                                        a.rating-down(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, -1)') –
-                                        a.rating-up(ng-show='showRatingButtons', href='', ng-click='voteTranslation("{{item._id}}", {{$index}}, 1)') +
-                                        span.rating {{tr.rating}}
-                            div(ng-show='tItem.id === item._id')
-                                form(name='submitTranslationForm', novalidate)
-                                    //- hidden(ng-model='titem.iid', value='{{findTranslationByid(item.id)}}')
-                                    textarea.translation-edit-item.form-control(rows='2', ng-model='tItem.text', ng-required='true')
-                                    div.translation-edit-bottom-panel
-                                        div.pull-left {{tItem.text.length}} / {{item.text.length}}
-                                        div.pull-right
-                                            button.btn.btn-default.btn-xs(type='button', ng-click='cancelTranslation(item._id)') Cancel
-                                            | 
-                                            button.btn.btn-primary.btn-xs(type='submit', ng-click='submitTranslation(item._id)', ng-disabled='submitTranslationForm.$invalid') Submit
-                        td.tools
-                            a(href='', ng-click='addTranslation(item._id)') add
-                            //- br
-                            //- a(href='') comment                        
-
-        .col-sm-2 sidebar
+        .col-sm-2
 
 block append scripts
     script(src='/socket.io/socket.io.js')

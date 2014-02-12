@@ -56,24 +56,24 @@ exports.init = function(app) {
     ));
 
     // user middleware
-    // app.use(function(req, res, next) {
-    //     var user = {
-    //         role: accessConfig.roles.public
-    //     };
+    app.use(function(req, res, next) {
+        var user = {
+            role: accessConfig.roles.public
+        };
 
-    //     if (req.user) {
-    //         user = {
-    //             id: req.user.id,
-    //             role: req.user.role,
-    //             username: req.user.username,
-    //             login: req.user.login
-    //         };
-    //     }
+        if (req.user) {
+            user = {
+                _id: req.user._id,
+                role: req.user.role,
+                username: req.user.username,
+                login: req.user.login
+            };
+        }
 
-    //     res.cookie('user', JSON.stringify(user));
+        res.cookie('user', JSON.stringify(user));
 
-    //     next();
-    // });
+        next();
+    });
 
     var level = function(requestedLevel) {
         return function(req, res, next) {
