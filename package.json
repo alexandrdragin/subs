@@ -6,7 +6,7 @@
         "start": "node app.js"
     },
     "dependencies": {
-        "express": "*",
+        "express": "3.4.7",
         "jade": "*",
         "less-middleware": "*",
         "tracer": "*",
@@ -17,7 +17,7 @@
         "socket.io": "*",
         "passport.socketio": "*",
         "mongoose": "*",
-        "connect-redis": "*",
+        "connect-redis": "1.4.6",
         "connect-mongo": "*",
         "nodemailer": "*",
         "iconv": "*",

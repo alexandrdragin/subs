@@ -1,7 +1,7 @@
 angular.module('tApp.factories', ['ngCookies'])
     .factory('socket', function(socketFactory) {
         return socketFactory({
-            ioSocket: io.connect('localhost')
+            ioSocket: io.connect(location.origin)
         });
     })
 
